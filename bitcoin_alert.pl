@@ -24,6 +24,7 @@ unless(defined($low_value)){ $low_value = "600.00";}  # High btc price to alert.
 my $value; # Current value of btc. Generated automatically by bitcoin_price.pl.
 my $input_file = "bitcoin_value.txt";
 unless(defined($email)){$email = 'someemail@somedomain.com';}
+unless(defined($from_email)){$from_email = 'myuser@mydomain.com'}
 my $message = "script has malfunctioned.";
 ##################
 
@@ -49,10 +50,9 @@ elsif (($value > $high_value) && ($high_value != "-1")){
 sub alert_email {
 	my %mail = ( 
 		To => "$email",
-		From => 'r3dm4n@devio.us',
+		From => "$from_email",
 		Subject => '==Bitcoin Alert==',
 		Message => "$message",
 	);
-	#$mail{smtp} = 'wolfman.devio.us';
 	sendmail(%mail) or die $Mail::Sendmail::error;
 }
