@@ -1,6 +1,6 @@
 # BTC_Alarm
-
-====A simple Bitcoin market value monitor and alarm.
+========
+####A simple Bitcoin market value monitor and alarm.
 
 BTC_Alarm consists of (so far) 2 programs and 1 text file.
 
