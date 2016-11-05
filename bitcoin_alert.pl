@@ -16,32 +16,37 @@
 
 ### MODULES ###
 use Mail::Sendmail;
+use Sys::Hostname;
 
 
 ### VARIABLES ####
-unless(defined($high_value)){ $high_value = "800.00";} # Low btc price to alert. -1 for disable. USD.
-unless(defined($low_value)){ $low_value = "600.00";}  # High btc price to alert. -1 for disable. USD.
+unless(defined($high_value)){ $high_value = "1000.00";} # Low btc price to alert. -1 for disable. USD.
+unless(defined($low_value)){ $low_value = "200.00";}  # High btc price to alert. -1 for disable. USD.
 my $value; # Current value of btc. Generated automatically by bitcoin_price.pl.
 my $input_file = "bitcoin_value.txt";
 unless(defined($email)){$email = 'someemail@somedomain.com';}
-unless(defined($from_email)){$from_email = 'myuser@mydomain.com'}
+unless(defined($from_email)){$from_email = "" . getlogin() . "@" . hostname() . "";}
 my $message = "script has malfunctioned.";
+
 ##################
 
 
 ### MAIN ###
 open FH,"<",$input_file or die $!;
-$value = <FH>;
+@value_all = <FH>;
+$value = $value_all[-1]; # Get last line (most recent)
 close FH;
 
-$value =~ s/\$//; # Remove leading $
+$value =~ s/\$//; # Remove leading $ if present
+$value =~ m/^(\d+.\d+)/; # Just get value from vale/date string.
+$value = $1;
 
 if (($value < $low_value) && ($low_value != "-1")){
-	$message = "ALERT: Bitcoin has reached $value! It is below your low value.";
+	$message = "ALERT: Bitcoin has reached $value!\nIt is below your low value.";
 	&alert_email;
 }
 elsif (($value > $high_value) && ($high_value != "-1")){
-	$message = "ALERT: Bitcoin has reached $value! It is above your high value.";
+	$message = "ALERT: Bitcoin has reached $value!\nIt is above your high value.";
 	&alert_email;
 }
 ### END ###
@@ -50,7 +55,7 @@ elsif (($value > $high_value) && ($high_value != "-1")){
 sub alert_email {
 	my %mail = ( 
 		To => "$email",
-		From => "$from_email",
+		From => $from_email,
 		Subject => '==Bitcoin Alert==',
 		Message => "$message",
 	);
