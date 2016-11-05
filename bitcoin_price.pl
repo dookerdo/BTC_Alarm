@@ -1,14 +1,16 @@
 #!/usr/bin/perl -w
-use LWP::Simple;
 # Uses specific websites to pull latest bitcoin market price in USD.
 # Prints amount to bitcoin_value.txt.
 # Author: Zach L.
+
+use LWP::Simple;
+use FindBin '$Bin';
 
 my $url1 = 'http://www.coindesk.com/price/';
 my $url2 = 'http://www.coinbase.com/charts?locale=en';
 my $content;
 my $value = 0;
-my $out_file = "bitcoin_value.txt";
+my $out_file = "$Bin/bitcoin_value.txt"; # Use script directory as base path.
 
 my @all_values;
 
