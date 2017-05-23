@@ -5,9 +5,10 @@
 
 use LWP::Simple;
 use FindBin '$Bin';
+use feature say;
 
-my $url1 = 'http://www.coindesk.com/price/';
-my $url2 = 'http://www.coinbase.com/charts?locale=en';
+my $url1 = 'http://api.coindesk.com/v1/bpi/currentprice.json';
+my $url2 = 'http://api.coinbase.com/v2/exchange-rates?currency=BTC';
 my $content;
 my $value = 0;
 my $out_file = "$Bin/bitcoin_value.txt"; # Use script directory as base path.
@@ -16,14 +17,19 @@ my @all_values;
 
 ### URL1 ###
 # Uses wget because coindesk does not like LWP useragent.
-$content = `wget --quiet $url1 -O -`;
-$content =~ m/bpi-value bpiUSD".\$(.+)..div/;
-push(@all_values, $1);
+#$content = `wget --quiet $url1 -O -`;
+$content = get($url1);
+$content =~ m/36;","rate":"(.+)","description":"Unit/;
+chomp($1);
+$amt = $1;
+$amt =~ s/,//;
+$amt = sprintf "%.2f", $amt;
+push(@all_values, $amt);
 
 ### URL2 ###
 # Coinbase accepts LWP useragent (thanks coinbase!)
 $content = get($url2);
-$content =~ m/1 BTC = \$(\d+\.\d+)/;
+$content =~ m/USD":"([^"]+)"/;
 push(@all_values, $1);
 
 
